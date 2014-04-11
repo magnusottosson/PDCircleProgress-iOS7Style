@@ -8,76 +8,129 @@
 
 #import "PDCircleProgress.h"
 
-#define LINE_WIDTH 2
-#define BLUE_COLOR [UIColor colorWithRed:0 green:0.48 blue:1 alpha:1]
-#define BLUE_COLOR_ALPHA(__x__) [UIColor colorWithRed:0 green:0.48 blue:1 alpha:__x__]
-
 @interface PDCircleProgress ()
 {
-    CADisplayLink * link;
-    CGFloat tempProgress;
-    CGFloat tempAlpha;
+    CADisplayLink * _link;
+    CGFloat _tempProgress;
+    CGFloat _tempAlpha;
 }
 @end
 
 @implementation PDCircleProgress
+
+- (id)init { return [self initWithFrame:CGRectZero]; }
 
 - (id)initWithFrame:(CGRect)frame
 {
     frame = CGRectMake(frame.origin.x, frame.origin.y, frame.size.width, frame.size.width);
     self = [super initWithFrame:frame];
     
-    if (self) {
-        self.progress = 0.f;
-        tempProgress = 0.f;
-        tempAlpha = 0.f;
-        self.backgroundColor = [UIColor whiteColor];
-        
-        link = [CADisplayLink displayLinkWithTarget:self selector:@selector(setNeedsDisplay)];
-        [link addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
-        
+    if ( self )
+    {
+        [self commonSetup];
     }
     return self;
 }
 
+- (void)commonSetup
+{
+    self.progress = 0.f;
+    _tempProgress = 0.f;
+    _tempAlpha = 0.f;
+    self.progressStyle = PDCircleProgressStyleiOS7;
+    [self setBackgroundColor:[UIColor whiteColor]];
+}
+
+- (void)didMoveToSuperview
+{
+    _link = [CADisplayLink displayLinkWithTarget:self selector:@selector(setNeedsDisplay)];
+    _link.frameInterval = 0.5;
+    [_link addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+}
+
 - (void)drawRect:(CGRect)rect
 {
-    if (self.progress <= 0.f) {
-        [self tryToConnect];
-    } else if (self.progress >= 1.f) {
-        [self finishedLoad];
-    } else {
-        [self loading];
+
+    switch (self.progressStyle) {
+        case PDCircleProgressStyleiOS7:
+            [self iOS7Style];
+            break;
+        case PDCircleProgressStyleJD:
+            
+            break;
+        case PDCircleProgressStyleWeChat:
+            
+            break;
+        default:
+            break;
+    }
+    
+}
+
+- (void)stateRefresh
+{
+    if ( self.progress <= 0.f)
+    {
+        [self setProgressState:PDCircleProgressStateTryToConnect];
+    }
+    else if ( self.progress >= 1.f)
+    {
+        [self setProgressState:PDCircleProgressStateFinished];
+    }
+    else
+    {
+        [self setProgressState:PDCircleProgressStateDownloading];
     }
 }
 
-#pragma mark - loading state
-- (void)tryToConnect
+- (void)setNeedsDisplay
 {
-    CGFloat distance = 2 * M_PI;
-    CGFloat secondsPerFrame = 0.9;
+    [self stateRefresh];
+    [super setNeedsDisplay];
+}
+
+#pragma mark - ios7 style ：三个状态
+
+const int lineWidth = 2;
+#define BLUE_COLOR [UIColor colorWithRed:0 green:0.48 blue:1 alpha:1]
+#define BLUE_COLOR_ALPHA(__x__) [UIColor colorWithRed:0 green:0.48 blue:1 alpha:__x__]
+
+- (void)iOS7Style
+{
+    switch (self.progressState) {
+        case PDCircleProgressStateTryToConnect:
+            [self iOS7TryToConnect];
+            break;
+        case PDCircleProgressStateFinished:
+            [self iOS7FinishedLoad];
+            break;
+        case PDCircleProgressStateDownloading:
+            [self iOS7Loading];
+            break;
+    }
+}
+
+- (void)iOS7TryToConnect
+{
     
-    NSTimeInterval ti = [NSDate timeIntervalSinceReferenceDate] / secondsPerFrame;
-    
-    BOOL goesCW = YES;
-    CGFloat phase = distance * (ti - floor(ti)) * (goesCW ? - 1 : 1);
-    
+    CGFloat phase = [self phase] * 2 * M_PI;
     UIBezierPath * circle = [UIBezierPath bezierPathWithArcCenter:RectGetCenter(self.bounds)
-                                                           radius:self.bounds.size.width / 2 - LINE_WIDTH
+                                                           radius:self.bounds.size.width / 2 - lineWidth
                                                        startAngle:phase
                                                          endAngle:0.3 + phase clockwise:NO];
     
-    [circle setLineWidth:LINE_WIDTH];
+    [circle setLineWidth:lineWidth];
     [BLUE_COLOR setStroke];
     [circle stroke];
 }
 
-- (void)loading
+- (void)iOS7Loading
 {
+    CGFloat phase = [self phase] > 0 ? [self phase] : - [self phase];
     
     //loading background
-    UIBezierPath * loadingPath = [UIBezierPath bezierPathWithOvalInRect:CGRectInset(self.bounds, LINE_WIDTH, LINE_WIDTH)];
-    [loadingPath setLineWidth:LINE_WIDTH];
+    UIBezierPath * loadingPath = [UIBezierPath bezierPathWithOvalInRect:CGRectInset(self.bounds, lineWidth, lineWidth)];
+    [loadingPath setLineWidth:lineWidth];
     [BLUE_COLOR setStroke];
     [loadingPath stroke];
     
@@ -87,18 +140,19 @@
     [loadingPath fill];
 
     //loading Progress
-    loadingPath = [UIBezierPath bezierPathWithArcCenter:RectGetCenter(self.bounds) radius:self.bounds.size.width / 2 - LINE_WIDTH * 2.5 startAngle:ProgressToAngle(0) endAngle:ProgressToAngle(self.progress) clockwise:YES];
-    [loadingPath setLineWidth:LINE_WIDTH * 2];
+    NSLog(@"%f",phase);
+    _tempProgress = _tempProgress > self.progress ? 1 : _tempProgress + phase;
+    loadingPath = [UIBezierPath bezierPathWithArcCenter:RectGetCenter(self.bounds) radius:self.bounds.size.width / 2 - lineWidth * 2.5 startAngle:ProgressToAngle(0) endAngle:ProgressToAngle(_tempProgress) clockwise:YES];
+    [loadingPath setLineWidth:lineWidth * 2];
     [BLUE_COLOR setStroke];
     [loadingPath stroke];
     
 }
 
-
-- (void)finishedLoad
+- (void)iOS7FinishedLoad
 {
     //底图
-    UIBezierPath* ovalPath = [UIBezierPath bezierPathWithOvalInRect: CGRectInset(self.bounds, LINE_WIDTH, LINE_WIDTH)];
+    UIBezierPath* ovalPath = [UIBezierPath bezierPathWithOvalInRect: CGRectInset(self.bounds, lineWidth, lineWidth)];
     
     //对勾
     UIBezierPath* bezierPath = [UIBezierPath bezierPath];
@@ -125,26 +179,36 @@
     CGFloat secondsPerFrame = 0.1;
     NSTimeInterval ti = [NSDate timeIntervalSinceReferenceDate] / secondsPerFrame;
     CGFloat phase = step * (ti - floor(ti));
-    if (tempAlpha < 1) {
-        tempAlpha += phase;
+    if (_tempAlpha < 1) {
+        _tempAlpha += phase;
     } else {
-        [link invalidate];
+        [_link invalidate];
     }
     
-    [BLUE_COLOR_ALPHA(tempAlpha) setFill];
+    [BLUE_COLOR_ALPHA(_tempAlpha) setFill];
     [bezierPath fill];
-    [BLUE_COLOR_ALPHA(tempAlpha) setStroke];
-    bezierPath.lineWidth = LINE_WIDTH;
+    [BLUE_COLOR_ALPHA(_tempAlpha) setStroke];
+    bezierPath.lineWidth = lineWidth;
     [bezierPath stroke];
-    
 }
 
-#pragma mark - public method
+#pragma mark - common phase
+- (CGFloat)phase
+{
+    CGFloat distance = 1;
+    CGFloat secondsPerFrame = 1;
+    
+    NSTimeInterval ti = [NSDate timeIntervalSinceReferenceDate] / secondsPerFrame;
+    BOOL goesCW = YES;
+    CGFloat phase = distance * (ti - floor(ti)) * (goesCW ? - 1 : 1);
+    return phase;
+}
+
+#pragma mark - public math method
 
 CGFloat ProgressToAngle(CGFloat progress)
 {
     return  progress * M_PI * 2 - M_PI_2;
-    
 }
 
 CGPoint RectGetCenter(CGRect rect)

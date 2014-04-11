@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		19103B4718F53BA70075B284 /* UIBezierPath+BasicShapes.m in Sources */ = {isa = PBXBuildFile; fileRef = 19103B4618F53BA70075B284 /* UIBezierPath+BasicShapes.m */; };
 		19352A0818E8651A0023A127 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 19352A0718E8651A0023A127 /* Foundation.framework */; };
 		19352A0A18E8651A0023A127 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 19352A0918E8651A0023A127 /* CoreGraphics.framework */; };
 		19352A0C18E8651A0023A127 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 19352A0B18E8651A0023A127 /* UIKit.framework */; };
@@ -35,6 +36,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		19103B4518F53BA70075B284 /* UIBezierPath+BasicShapes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIBezierPath+BasicShapes.h"; sourceTree = "<group>"; };
+		19103B4618F53BA70075B284 /* UIBezierPath+BasicShapes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIBezierPath+BasicShapes.m"; sourceTree = "<group>"; };
 		19352A0418E8651A0023A127 /* PDCircleProgress.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PDCircleProgress.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		19352A0718E8651A0023A127 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		19352A0918E8651A0023A127 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -115,7 +118,6 @@
 		19352A0D18E8651A0023A127 /* PDCircleProgress */ = {
 			isa = PBXGroup;
 			children = (
-
 				1944D23F18E9C99D00F99CEF /* PDCircleProgress */,
 				19352A1618E8651A0023A127 /* PDAppDelegate.h */,
 				19352A1718E8651A0023A127 /* PDAppDelegate.m */,
@@ -160,17 +162,12 @@
 		1944D23F18E9C99D00F99CEF /* PDCircleProgress */ = {
 			isa = PBXGroup;
 			children = (
+				19103B4518F53BA70075B284 /* UIBezierPath+BasicShapes.h */,
+				19103B4618F53BA70075B284 /* UIBezierPath+BasicShapes.m */,
 				1944D24018E9C9B300F99CEF /* PDCircleProgress.h */,
 				1944D24118E9C9B300F99CEF /* PDCircleProgress.m */,
 			);
 			path = PDCircleProgress;
-			sourceTree = "<group>";
-		};
-		1944D24318E9C9D100F99CEF /* 123333 */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = 123333;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -272,6 +269,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1944D24218E9C9B300F99CEF /* PDCircleProgress.m in Sources */,
+				19103B4718F53BA70075B284 /* UIBezierPath+BasicShapes.m in Sources */,
 				19352A1818E8651A0023A127 /* PDAppDelegate.m in Sources */,
 				19352A1E18E8651A0023A127 /* PDViewController.m in Sources */,
 				19352A1418E8651A0023A127 /* main.m in Sources */,

@@ -26,13 +26,13 @@
     [progress setCenter:CGPointMake(160, 200)];
     [self.view addSubview:progress];
     tempProgress = 0;
-    [self performSelector:@selector(go) withObject:nil afterDelay:10];
+    [self performSelector:@selector(go) withObject:nil afterDelay:3];
 }
 
 - (void)go
 {
     if (tempProgress < 1) {
-        tempProgress += 0.001;
+        tempProgress += 0.4;
         progress.progress = tempProgress;
     }
     [self performSelector:@selector(go) withObject:nil afterDelay:0.01];
