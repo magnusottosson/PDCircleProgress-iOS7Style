@@ -7,8 +7,8 @@ iOS7 style of the progress bar
 
 ## State
 
-> try To Connect : progress <= 0
+* try to connect : progress <= 0
 
-> finish loading : progress >= 0
+* finished loading : progress >= 1
 
-> loading        : else
+* loading        : else
